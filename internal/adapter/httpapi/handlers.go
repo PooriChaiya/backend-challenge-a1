@@ -1,5 +1,3 @@
-// Package httpapi is the HTTP adapter — DTOs, handlers, error mapping.
-// Depends on service.UserService and port.TokenVerifier only.
 package httpapi
 
 import (
@@ -17,8 +15,6 @@ type Handlers struct {
 }
 
 func NewHandlers(svc *service.UserService) *Handlers { return &Handlers{svc: svc} }
-
-// --- DTOs ---
 
 type userResp struct {
 	ID        string    `json:"id"`
@@ -46,8 +42,6 @@ type updateReq struct {
 	Name  *string `json:"name,omitempty"`
 	Email *string `json:"email,omitempty"`
 }
-
-// --- helpers ---
 
 func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("Content-Type", "application/json")
@@ -78,8 +72,6 @@ func decode(r *http.Request, dst any) error {
 	}
 	return nil
 }
-
-// --- handlers ---
 
 func (h *Handlers) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerReq

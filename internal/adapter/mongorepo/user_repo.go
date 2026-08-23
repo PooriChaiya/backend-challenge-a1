@@ -1,4 +1,3 @@
-// Package mongorepo implements port.UserRepository against MongoDB.
 package mongorepo
 
 import (
@@ -13,10 +12,10 @@ import (
 )
 
 type userDoc struct {
-	ID           string    `bson:"_id"`
-	Name         string    `bson:"name"`
-	Email        string    `bson:"email"`
-	PasswordHash string    `bson:"password_hash"`
+	ID           string        `bson:"_id"`
+	Name         string        `bson:"name"`
+	Email        string        `bson:"email"`
+	PasswordHash string        `bson:"password_hash"`
 	CreatedAt    bson.DateTime `bson:"created_at"`
 }
 
@@ -44,7 +43,6 @@ type Repo struct {
 	col *mongo.Collection
 }
 
-// New builds the repo and ensures the unique email index exists.
 func New(ctx context.Context, db *mongo.Database) (*Repo, error) {
 	col := db.Collection("users")
 	_, err := col.Indexes().CreateOne(ctx, mongo.IndexModel{

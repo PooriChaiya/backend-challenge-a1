@@ -1,4 +1,3 @@
-// Package jwtauth implements TokenIssuer/TokenVerifier with HS256 JWTs.
 package jwtauth
 
 import (

@@ -15,9 +15,6 @@ import (
 	"github.com/PooriChaiya/backend-challenge-a1/internal/service"
 )
 
-// --- fakes (copied slim from service tests; ponytail: duplication beats a
-// shared testutil package for two files) ---
-
 type memRepo struct {
 	mu sync.Mutex
 	m  map[string]domain.User
@@ -108,8 +105,6 @@ func (stubTokens) Verify(t string) (string, error) {
 	return strings.TrimPrefix(t, "TOK:"), nil
 }
 
-// --- helpers ---
-
 func newRouter() http.Handler {
 	svc := service.New(newMemRepo(), plainHasher{}, stubTokens{})
 	return NewRouter(NewHandlers(svc), stubTokens{})
@@ -130,8 +125,6 @@ func do(t *testing.T, r http.Handler, method, path, token string, body any) *htt
 	return rr
 }
 
-// --- tests ---
-
 func TestRegisterAndListShape(t *testing.T) {
 	r := newRouter()
 
@@ -139,18 +132,16 @@ func TestRegisterAndListShape(t *testing.T) {
 	if rr.Code != http.StatusCreated {
 		t.Fatalf("register status=%d body=%s", rr.Code, rr.Body.String())
 	}
-	// no password field ever
+
 	if strings.Contains(strings.ToLower(rr.Body.String()), "password") {
 		t.Errorf("register response leaks password: %s", rr.Body.String())
 	}
 
-	// duplicate → 409
 	rr = do(t, r, "POST", "/register", "", map[string]string{"name": "A", "email": "a@b.c", "password": "secret1"})
 	if rr.Code != http.StatusConflict {
 		t.Errorf("dup want 409 got %d", rr.Code)
 	}
 
-	// login → token
 	rr = do(t, r, "POST", "/login", "", map[string]string{"email": "a@b.c", "password": "secret1"})
 	if rr.Code != http.StatusOK {
 		t.Fatalf("login status=%d", rr.Code)
@@ -162,16 +153,14 @@ func TestRegisterAndListShape(t *testing.T) {
 		t.Fatal("no token returned")
 	}
 
-	// protected without token → 401
 	if rr = do(t, r, "GET", "/users", "", nil); rr.Code != http.StatusUnauthorized {
 		t.Errorf("no-token want 401 got %d", rr.Code)
 	}
-	// protected with bad token → 401
+
 	if rr = do(t, r, "GET", "/users", "garbage", nil); rr.Code != http.StatusUnauthorized {
 		t.Errorf("bad-token want 401 got %d", rr.Code)
 	}
 
-	// list → 200, one user, no password field
 	rr = do(t, r, "GET", "/users", tok, nil)
 	if rr.Code != http.StatusOK {
 		t.Fatalf("list status=%d", rr.Code)
@@ -189,19 +178,16 @@ func TestRegisterAndListShape(t *testing.T) {
 		t.Fatal("missing id in list response")
 	}
 
-	// update → 200
 	rr = do(t, r, "PUT", "/users/"+id, tok, map[string]string{"name": "Alice2"})
 	if rr.Code != http.StatusOK {
 		t.Errorf("update status=%d body=%s", rr.Code, rr.Body.String())
 	}
 
-	// get missing → 404
 	rr = do(t, r, "GET", "/users/nonexistent", tok, nil)
 	if rr.Code != http.StatusNotFound {
 		t.Errorf("missing want 404 got %d", rr.Code)
 	}
 
-	// delete → 204
 	rr = do(t, r, "DELETE", "/users/"+id, tok, nil)
 	if rr.Code != http.StatusNoContent {
 		t.Errorf("delete want 204 got %d", rr.Code)

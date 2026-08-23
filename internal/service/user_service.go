@@ -1,6 +1,3 @@
-// Package service is the application core — it orchestrates the ports
-// (repository, hasher, token issuer) to fulfil use cases. It knows nothing
-// about HTTP, Mongo, or JWT specifics.
 package service
 
 import (
@@ -16,7 +13,6 @@ import (
 	"github.com/PooriChaiya/backend-challenge-a1/internal/port"
 )
 
-// randID returns a 16-byte hex id. ponytail: stdlib beats pulling in uuid.
 func randID() string {
 	var b [16]byte
 	_, _ = rand.Read(b[:])
@@ -27,8 +23,8 @@ type UserService struct {
 	repo   port.UserRepository
 	hasher port.PasswordHasher
 	tokens port.TokenIssuer
-	now    func() time.Time // ponytail: injectable for tests; time.Now in prod
-	newID  func() string    // ponytail: injectable for tests; uuid in prod
+	now    func() time.Time
+	newID  func() string
 }
 
 func New(repo port.UserRepository, hasher port.PasswordHasher, tokens port.TokenIssuer) *UserService {
@@ -94,7 +90,7 @@ func (s *UserService) List(ctx context.Context) ([]domain.User, error) {
 }
 
 type UpdateInput struct {
-	Name, Email *string // nil = leave unchanged
+	Name, Email *string
 }
 
 func (s *UserService) Update(ctx context.Context, id string, in UpdateInput) (*domain.User, error) {

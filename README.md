@@ -1,8 +1,5 @@
 # backend-challenge-a1 — User Management API
 
-Go REST API for user management. JWT auth, MongoDB, hexagonal (ports & adapters) layout.
-
-Answers [7-solutions/backend-challenge](https://github.com/7-solutions/backend-challenge) Assignment 1.
 
 ## Run
 
@@ -17,8 +14,6 @@ Brings up MongoDB and the API on `http://localhost:8080`. Every 10s the API logs
 ```bash
 go test ./...
 ```
-
-No network needed — service and HTTP tests use in-memory fakes.
 
 ## Layout
 
@@ -81,14 +76,3 @@ curl -s -X PUT -H "Authorization: Bearer $TOKEN" -H 'content-type: application/j
 # delete
 curl -s -X DELETE -H "Authorization: Bearer $TOKEN" -o /dev/null -w '%{http_code}\n' localhost:8080/users/$ID
 ```
-
-## Skipped (add if reviewer asks)
-
-- gRPC + protobuf server
-- Integration tests against real Mongo (testcontainers)
-- Refresh tokens, RBAC, rate limiting
-- Structured logging / metrics / tracing
-
-## Notes
-
-- Deliberate simplifications are marked `ponytail:` in source.

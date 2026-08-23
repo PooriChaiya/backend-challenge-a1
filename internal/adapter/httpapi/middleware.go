@@ -14,7 +14,6 @@ type ctxKey int
 
 const userIDKey ctxKey = 1
 
-// Logging captures method, path, status, elapsed.
 func Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -34,7 +33,6 @@ func (s *statusWriter) WriteHeader(code int) {
 	s.ResponseWriter.WriteHeader(code)
 }
 
-// Auth verifies a Bearer token and injects the user id in context.
 func Auth(v port.TokenVerifier) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -55,8 +53,6 @@ func Auth(v port.TokenVerifier) func(http.Handler) http.Handler {
 	}
 }
 
-// UserIDFrom returns the authenticated user id, if any. ponytail: unused by
-// handlers today; kept for future ownership checks.
 func UserIDFrom(ctx context.Context) (string, bool) {
 	v, ok := ctx.Value(userIDKey).(string)
 	return v, ok

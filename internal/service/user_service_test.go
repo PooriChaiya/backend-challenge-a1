@@ -9,8 +9,6 @@ import (
 	"github.com/PooriChaiya/backend-challenge-a1/internal/domain"
 )
 
-// --- hand-written fakes ---
-
 type memRepo struct {
 	mu sync.Mutex
 	m  map[string]domain.User
@@ -94,8 +92,6 @@ func (plainHasher) Compare(hash, p string) error {
 type stubIssuer struct{}
 
 func (stubIssuer) Issue(id string) (string, error) { return "TOK:" + id, nil }
-
-// --- tests ---
 
 func newSvc() *UserService {
 	return New(newMemRepo(), plainHasher{}, stubIssuer{})

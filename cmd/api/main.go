@@ -1,5 +1,3 @@
-// Composition root: reads env, builds adapters, wires them into the service,
-// serves HTTP, runs the 10s user-count logger, shuts down on SIGINT/SIGTERM.
 package main
 
 import (
@@ -40,7 +38,6 @@ func main() {
 	rootCtx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	// Mongo client (10s connect budget).
 	connectCtx, connectCancel := context.WithTimeout(rootCtx, 10*time.Second)
 	defer connectCancel()
 	client, err := mongo.Connect(options.Client().ApplyURI(mongoURI))
@@ -60,7 +57,7 @@ func main() {
 	}
 
 	svc := service.New(repo, bcryptpw.New(0), jwtauth.New(jwtSecret, 24*time.Hour))
-	tokens := jwtauth.New(jwtSecret, 24*time.Hour) // ponytail: same secret, used as verifier too
+	tokens := jwtauth.New(jwtSecret, 24*time.Hour)
 
 	handler := httpapi.NewRouter(httpapi.NewHandlers(svc), tokens)
 	srv := &http.Server{
@@ -69,10 +66,8 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	// Background: log user count every 10s.
 	go userCountLogger(rootCtx, svc)
 
-	// Serve.
 	serverErr := make(chan error, 1)
 	go func() {
 		log.Printf("listening on :%s", port)

@@ -1,4 +1,3 @@
-// Package bcryptpw implements port.PasswordHasher with bcrypt.
 package bcryptpw
 
 import "golang.org/x/crypto/bcrypt"

@@ -6,7 +6,6 @@ import (
 	"github.com/PooriChaiya/backend-challenge-a1/internal/port"
 )
 
-// NewRouter wires all endpoints. Public routes bypass Auth; /users/* sits behind it.
 func NewRouter(h *Handlers, v port.TokenVerifier) http.Handler {
 	mux := http.NewServeMux()
 

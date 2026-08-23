@@ -1,5 +1,3 @@
-// Package port defines the interfaces the application service depends on
-// (driven ports). Adapters in internal/adapter implement these.
 package port
 
 import (
